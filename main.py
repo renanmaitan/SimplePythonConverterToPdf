@@ -8,8 +8,10 @@ def ensure_dir_recursive(dir_path):
         os.makedirs(dir_path)
 
 def convertFromDocx(input, output):
+    if not os.path.exists(input):
+        print("Input file does not exist")
+        sys.exit(1)
     ensure_dir_recursive(os.path.dirname(output))
-    ensure_dir_recursive(os.path.dirname(input))
     wdFormatPDF = 17
 
     input = os.path.abspath(input)
@@ -22,8 +24,10 @@ def convertFromDocx(input, output):
     word.Quit()
 
 def convertFromPptx(input_file_path, output_file_path):
+    if not os.path.exists(input_file_path):
+        print("Input file does not exist")
+        sys.exit(1)
     ensure_dir_recursive(os.path.dirname(output_file_path))
-    ensure_dir_recursive(os.path.dirname(input_file_path))
     input_file_path = os.path.abspath(input_file_path)
     output_file_path = os.path.abspath(output_file_path)
     powerpoint = comtypes.client.CreateObject("Powerpoint.Application")
@@ -33,19 +37,20 @@ def convertFromPptx(input_file_path, output_file_path):
     slides.Close()
     powerpoint.Quit()
 
-if __name__ == '__main__':
-    if len(sys.argv) < 4:
-        print("Usage: python convert.py <input-file> <output-file> <type>")
+try:
+    if len(sys.argv) != 4:
+        print("Usage: main.exe <input_file_path> <output_file_path> <type>")
         sys.exit(1)
-    
     input_file_path = sys.argv[1]
     output_file_path = sys.argv[2]
-    type = sys.argv[3]
-
-    if type == "docx":
+    file_type = sys.argv[3]
+    if file_type == "docx":
         convertFromDocx(input_file_path, output_file_path)
-    elif type == "pptx":
+    elif file_type == "pptx":
         convertFromPptx(input_file_path, output_file_path)
     else:
         print("Type not supported. Supported types: docx, pptx")
         sys.exit(1)
+except Exception as e:
+    print("Error: " + str(e))
+    sys.exit(1)
